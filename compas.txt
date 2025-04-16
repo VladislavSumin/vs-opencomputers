@@ -1,0 +1,14 @@
+                     North / Север / -Z / 2
+                              back
+                               ^
+                               |
+  West / Запад / -X / 4 <-------------> East / Восток / +X / 5
+         right                 |                left
+                               |
+                             front
+                      South / Юг / +Z / 3
+
+
+   UP / +Y / 1 / Top
+ DOWN / -Y / 0 / Bottom
+
