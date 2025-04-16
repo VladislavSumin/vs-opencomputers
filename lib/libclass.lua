@@ -47,6 +47,7 @@ end
 
 --- This is the most basic object in Luvit. It provides simple prototypal
 --- inheritance and inheritable constructors. All other objects inherit from this.
+--- @class Object
 local Object = {}
 Object.meta = { __index = Object }
 
