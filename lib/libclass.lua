@@ -70,6 +70,7 @@ end
 ---     end
 ---     local rect = Rectangle:new(3, 4)
 ---     p(rect:getArea())
+--- @return self
 function Object:new(...)
     local obj = self:create()
     if type(obj.initialize) == "function" then
