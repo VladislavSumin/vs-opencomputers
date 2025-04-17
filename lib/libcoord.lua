@@ -85,6 +85,10 @@ function Coord:initialize(x, y, z)
     self.z = z or 0
 end
 
+function Coord.meta:__tostring()
+    return self.x .. ", " .. self.y .. ", " .. self.z
+end
+
 -------------------------------------------------------------------------------
 --                               WorldCoord                                  --
 -------------------------------------------------------------------------------

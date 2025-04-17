@@ -5,11 +5,16 @@ local WorldCoord = libcoord.WorldCoord
 local Rotation = libcoord.Rotation
 local Direction = libcoord.Direction
 
-function createWorldCoordTest()
+function createTest()
     local wc = WorldCoord:new(1, 2, 3)
     test.assertEquals(1, wc.x)
     test.assertEquals(2, wc.y)
     test.assertEquals(3, wc.z)
+end
+
+function toStringTest()
+    local wc = WorldCoord:new(1, 2, 3)
+    test.assertEquals("1, 2, 3", tostring(wc))
 end
 
 -- Тесты для вертикального движения
