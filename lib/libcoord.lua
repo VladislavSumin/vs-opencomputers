@@ -40,6 +40,21 @@ function Rotation.rotate(rotation, clockwice)
 end
 
 -------------------------------------------------------------------------------
+--                                Direction                                  --
+-------------------------------------------------------------------------------
+
+--- Указывает направление движения в соответствии с compass.txt
+--- @enum Direction
+local Direction = {
+    down = 0,
+    up = 1,
+    forward = 3,
+    back = 2,
+    left = 5,
+    right = 4,
+}
+
+-------------------------------------------------------------------------------
 --                                  Coord                                    --
 -------------------------------------------------------------------------------
 
@@ -78,6 +93,7 @@ local LocalCoord = Coord:extend()
 -------------------------------------------------------------------------------
 
 libcoord.Rotation = Rotation
+libcoord.Direction = Direction
 libcoord.WorldCoord = WorldCoord
 libcoord.LocalCoord = LocalCoord
 
