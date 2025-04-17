@@ -28,7 +28,39 @@ local WorldCoord = Coord:extend()
 --- @class LocalCoord: Coord
 local LocalCoord = Coord:extend()
 
+--- Указывает направление взгляда робота в соответствии с compass.txt
+--- @enum Rotation
+local Rotation = {
+    north = 2,
+    south = 3,
+    west = 4,
+    east = 5
+}
+
+--- Возвращает сторону противоположную переданной
+--- @param rotation Rotation
+--- @return Rotation
+function Rotation.opposite(rotation)
+    local mod = rotation % 2
+    return ((mod + 1) % 2 + rotation - mod) --[[@as Rotation]]
+end
+
+local _clockwise = { 5, 4, 2, 3 }
+local _contrClockwise = { 4, 5, 3, 2 }
+
+--- @param rotation Rotation
+--- @param clockwice boolean
+--- @return Rotation
+function Rotation.rotate(rotation, clockwice)
+    if clockwice then
+        return _clockwise[rotation - 1]
+    else
+        return _contrClockwise[rotation - 1]
+    end
+end
+
 libcoord.WorldCoord = WorldCoord
 libcoord.LocalCoord = LocalCoord
+libcoord.Rotation = Rotation
 
 return libcoord
