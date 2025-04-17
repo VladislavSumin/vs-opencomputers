@@ -39,6 +39,20 @@ function Rotation.rotate(rotation, clockwice)
     end
 end
 
+function Rotation.toString(rotation)
+    if rotation == Rotation.north then
+        return "North / -Z"
+    elseif rotation == Rotation.south then
+        return "South / +Z"
+    elseif rotation == Rotation.west then
+        return "West / -X"
+    elseif rotation == Rotation.east then
+        return "East / +X"
+    else
+        error("Unknown rotation: " .. tostring(rotation))
+    end
+end
+
 -------------------------------------------------------------------------------
 --                                Direction                                  --
 -------------------------------------------------------------------------------
