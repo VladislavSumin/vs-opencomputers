@@ -79,6 +79,54 @@ end
 --- @class WorldCoord: Coord
 local WorldCoord = Coord:extend()
 
+--- Сдвигает координаты self.
+--- @param rotation Rotation текущее направление взгляда робота
+--- @param direction Direction направление в котором робот двигается (относительно себя и своего взгляда)
+function WorldCoord:move(rotation, direction)
+    -- Обработка вертикальных движений (up/down)
+    if direction == Direction.down or direction == Direction.up then
+        self.y = self.y + (direction == 1 and 1 or -1)
+        return
+    end
+
+    -- Проверка, что направление робота горизонтальное
+    local left_right = {
+        [2] = { left = 4, right = 5 }, -- north
+        [3] = { left = 5, right = 4 }, -- south
+        [4] = { left = 3, right = 2 }, -- west
+        [5] = { left = 2, right = 3 }, -- east
+    }
+
+    -- Определение глобального направления движения
+    local global_dir
+    if direction == Direction.forward then
+        global_dir = rotation
+    elseif direction == Direction.back then
+        global_dir = Rotation.opposite(rotation)
+    elseif direction == Direction.left then
+        global_dir = left_right[rotation].left
+    elseif direction == Direction.right then
+        global_dir = left_right[rotation].right
+    else
+        error("Unsupported movement direction: " .. tostring(direction))
+    end
+
+    -- Получение оси и изменения для глобального направления
+    local axis_info = {
+        [2] = { axis = 'z', delta = -1 }, -- north
+        [3] = { axis = 'z', delta = 1 },  -- south
+        [4] = { axis = 'x', delta = -1 }, -- west
+        [5] = { axis = 'x', delta = 1 },  -- east
+    }
+
+    local info = axis_info[global_dir]
+    if not info then
+        error("Unsupported global direction: " .. tostring(global_dir))
+    end
+
+    self[info.axis] = self[info.axis] + info.delta
+end
+
 -------------------------------------------------------------------------------
 --                               LocalCoord                                  --
 -------------------------------------------------------------------------------
