@@ -3,6 +3,11 @@
 local libclass = require("libclass")
 local libbitchunk = {}
 
+-------------------------------------------------------------------------------
+--                                BitChunk                                   --
+-------------------------------------------------------------------------------
+
+--- @class BitChunk: Object
 local BitChunk = libclass.Object:extend()
 
 -- Константы для размеров чанка
@@ -74,5 +79,51 @@ function BitChunk:clear()
     end
 end
 
+-------------------------------------------------------------------------------
+--                               BitChunks                                   --
+-------------------------------------------------------------------------------
+
+--- Хранилище чанков.
+--- @class BitChunks: Object
+local BitChunks = libclass.Object:extend()
+
+--- Инициализирует новое хранилище чанков.
+function BitChunks:initialize()
+    self.chunks = {}
+end
+
+--- Добавляет новый чанк в хранилище.
+--- @param coord ChunkCoord Координаты чанка
+--- @return BitChunk Созданный чанк
+function BitChunks:addChunk(coord)
+    local key = tostring(coord)
+    if self.chunks[key] then
+        error("Chunk already exists at " .. key)
+    end
+    
+    local chunk = BitChunk:new()
+    self.chunks[key] = chunk
+    return chunk
+end
+
+--- Удаляет чанк из хранилища.
+--- @param coord ChunkCoord Координаты чанка
+function BitChunks:removeChunk(coord)
+    local key = tostring(coord)
+    if not self.chunks[key] then
+        error("Chunk does not exist at " .. key)
+    end
+    
+    self.chunks[key] = nil
+end
+
+--- Получает чанк по его координатам.
+--- @param coord ChunkCoord Координаты чанка
+--- @return BitChunk? Чанк или nil, если чанк не существует
+function BitChunks:getChunk(coord)
+    return self.chunks[tostring(coord)]
+end
+
 libbitchunk.BitChunk = BitChunk
+libbitchunk.BitChunks = BitChunks
 return libbitchunk
