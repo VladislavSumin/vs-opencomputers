@@ -9,4 +9,22 @@ function libtest.assertEquals(expected, actual)
     end
 end
 
+function libtest.assertTrue(value)
+    if not value then
+        error("True assertion failed:\n\tExpected: true\n\tActual: false", 2)
+    end
+end
+
+function libtest.assertFalse(value)
+    if value then
+        error("False assertion failed:\n\tExpected: false\n\tActual: true", 2)
+    end
+end
+
+function libtest.assertNotNil(value)
+    if value == nil then
+        error("Not nil assertion failed:\n\tExpected: not nil\n\tActual: nil", 2)
+    end
+end
+
 return libtest
