@@ -24,16 +24,14 @@ function addRemoveTest()
     test.assertEquals(chunk, chunks:getChunk(coord))
     
     -- Попытка повторного добавления
-    local success, err = pcall(function() chunks:addChunk(coord) end)
-    test.assertFalse(success)
+    test.assertError(function() chunks:addChunk(coord) end)
     
     -- Удаление чанка
     chunks:removeChunk(coord)
     test.assertNil(chunks:getChunk(coord))
     
     -- Попытка удаления несуществующего чанка
-    success, err = pcall(function() chunks:removeChunk(coord) end)
-    test.assertFalse(success)
+    test.assertError(function() chunks:removeChunk(coord) end)
 end
 
 -- Тест получения чанка

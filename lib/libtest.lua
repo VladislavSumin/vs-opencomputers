@@ -33,4 +33,18 @@ function libtest.assertNil(value)
     end
 end
 
+function libtest.assertError(fn)
+    local success, err = pcall(fn)
+    if success then
+        error("Error assertion failed:\n\tExpected: error\n\tActual: no error", 2)
+    end
+end
+
+function libtest.assertNoError(fn)
+    local success, err = pcall(fn)
+    if not success then
+        error("No error assertion failed:\n\tExpected: no error\n\tActual: " .. tostring(err), 2)
+    end
+end
+
 return libtest
