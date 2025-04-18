@@ -157,10 +157,43 @@ end
 local LocalCoord = Coord:extend()
 
 -------------------------------------------------------------------------------
+--                               ChunkCoord                                  --
+-------------------------------------------------------------------------------
+
+--- Координаты чанка в мире.
+--- Чанк - это область размером 16x16x16 блоков.
+--- @class ChunkCoord: Coord
+local ChunkCoord = Coord:extend()
+
+--- Получает координаты чанка из мировых координат.
+--- @param worldCoord WorldCoord
+--- @return ChunkCoord
+function ChunkCoord.fromWorldCoord(worldCoord)
+    local x = math.floor(worldCoord.x / 16)
+    local y = math.floor(worldCoord.y / 16)
+    local z = math.floor(worldCoord.z / 16)
+    
+    return ChunkCoord:new(x, y, z)
+end
+
+--- Получает мировые координаты начала чанка (минимальные координаты в чанке).
+--- @return WorldCoord
+function ChunkCoord:getStartWorldCoord()
+    return WorldCoord:new(self.x * 16, self.y * 16, self.z * 16)
+end
+
+--- Получает мировые координаты конца чанка (максимальные координаты в чанке).
+--- @return WorldCoord
+function ChunkCoord:getEndWorldCoord()
+    return WorldCoord:new(self.x * 16 + 15, self.y * 16 + 15, self.z * 16 + 15)
+end
+
+-------------------------------------------------------------------------------
 
 libcoord.Rotation = Rotation
 libcoord.Direction = Direction
 libcoord.WorldCoord = WorldCoord
 libcoord.LocalCoord = LocalCoord
+libcoord.ChunkCoord = ChunkCoord
 
 return libcoord
