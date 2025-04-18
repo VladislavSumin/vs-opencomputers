@@ -27,4 +27,10 @@ function libtest.assertNotNil(value)
     end
 end
 
+function libtest.assertNil(value)
+    if value ~= nil then
+        error("Nil assertion failed:\n\tExpected: nil\n\tActual: " .. tostring(value), 2)
+    end
+end
+
 return libtest
