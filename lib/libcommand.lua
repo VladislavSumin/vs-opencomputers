@@ -65,11 +65,22 @@ function CommandProcessor:initialize(functions)
     self.functions = functions
 end
 
+--- @private
+--- @param command string вся команда от начала.
+--- @param index integer? индекс начиная с которого нужно парсить команду.
+---      индекс на котором остановился парсинг, результат парсинга
+--- @return            integer,                    ParsedCommand
+function CommandProcessor:parseInternal(command, index)
+    index = index or 1
+    return index, ParsedCommand:new()
+end
+
 --- Парсит команду не выполняя её. Может использоваться для кеширования команд что бы избежать их повторного парсинга.
 --- @param command string команда для обработки.
 --- @return ParsedCommand
 function CommandProcessor:parse(command)
-    return ParsedCommand:new()
+    local _, parsedCommand = self:parseInternal(command)
+    return parsedCommand
 end
 
 libcommand.CommandProcessor = CommandProcessor
