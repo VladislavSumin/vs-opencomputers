@@ -52,6 +52,7 @@ local Object = {}
 Object.meta = { __index = Object }
 
 --- Create a new instance of this object
+--- @private
 function Object:create()
     local meta = rawget(self, "meta")
     if not meta then error("Cannot inherit from instance object") end

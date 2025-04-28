@@ -123,13 +123,13 @@ local function parseInternal(command, index)
     return true, index
 end
 
---- Парсит переданную роботу команду
+--- Парсит (не выполняет сразу) переданную роботу команду.
 --- @param command string команда для обработки
----          ошибка   ошибка
---- @return boolean, string?
+---          ошибка  набор команд   ошибка
+--- @return boolean,     nil,       string?
 function librobot.parse(command)
     local result, _, error = parseInternal(command)
-    return result, error
+    return result, nil, error
 end
 
 return librobot
