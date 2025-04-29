@@ -8,7 +8,6 @@ local libcommand = {}
 
 --- Распаршенная и закешированная команда.
 --- @class ParsedCommand:Object
---- @field protected count integer количество повторений команды
 local ParsedCommand = libclass.Object:extend()
 
 function ParsedCommand:exec()
@@ -21,33 +20,27 @@ end
 --- @field private args [any] аргументы функции
 local SimpleParsedCommand = ParsedCommand:extend()
 
-function SimpleParsedCommand:initialize(count, fun, args)
-    self.count = count
+function SimpleParsedCommand:initialize(fun, args)
     self.fun = fun
     self.args = args
 end
 
 function SimpleParsedCommand:exec()
-    for _ = 1, self.count do
-        self.fun(table.unpack(self.args))
-    end
+    self.fun(table.unpack(self.args))
 end
 
 --- Сложная составная команда, состоит из набора простых команд.
 --- @class CompositeParsedCommand:ParsedCommand
---- @field private funs [ParsedCommand] список дочерних команд.
+--- @field private commands [ParsedCommand] список дочерних команд.
 local CompositeParsedCommand = ParsedCommand:extend()
 
-function CompositeParsedCommand:initialize(count, funs)
-    self.count = count
-    self.funs = funs
+function CompositeParsedCommand:initialize(commands)
+    self.commands = commands
 end
 
 function CompositeParsedCommand:exec()
-    for _ = 1, self.count do
-        for _, fun in ipairs(self.funs) do
-            fun:exec()
-        end
+    for _, command in ipairs(self.commands) do
+        command:exec()
     end
 end
 
@@ -65,7 +58,6 @@ function CommandProcessor:initialize(functions)
     self.functions = functions
 end
 
---- парсит имя поманды до первой не буквы
 --- @private
 --- @param command string
 --- @param index integer
@@ -84,6 +76,44 @@ function CommandProcessor:parseCommandName(command, index)
 end
 
 --- @private
+--- @param command string
+--- @param index integer
+--- @return integer, string
+function CommandProcessor:parseCommandArgument(command, index)
+    local argument = ""
+    while index <= #command do
+        local char = command:sub(index, index)
+        if not char:match("[%a%d]") then
+            break
+        end
+        argument = argument .. char
+        index = index + 1
+    end
+    return index, argument
+end
+
+--- @private
+--- @param command string
+--- @param index integer
+--- @return integer, [string]
+function CommandProcessor:parseCommandArguments(command, index)
+    local arguments = {}
+    while index <= #command do
+        local char = command:sub(index, index)
+        if char == " " then
+            index = index + 1
+        elseif char:match("[%a%d]") then
+            local argument
+            index, argument = self:parseCommandArgument(command, index)
+            table.insert(arguments, argument)
+        else
+            error("Unexpected char " .. char)
+        end
+    end
+    return index, arguments
+end
+
+--- @private
 --- @param command string вся команда от начала.
 --- @param index integer? индекс начиная с которого нужно парсить команду.
 ---      индекс на котором остановился парсинг, результат парсинга
@@ -96,13 +126,15 @@ function CommandProcessor:parseInternal(command, index)
         if char:match("%a") then
             local commandName
             index, commandName = self:parseCommandName(command, index)
+            local args
+            index, args = self:parseCommandArguments(command, index)
             local func = self.functions[commandName]
-            table.insert(commands, SimpleParsedCommand:new(1, func, {}))
+            table.insert(commands, SimpleParsedCommand:new(func, args))
         else
             error("Unexpected symbol " .. char)
         end
     end
-    return index, CompositeParsedCommand:new(1, commands)
+    return index, CompositeParsedCommand:new(commands)
 end
 
 --- Парсит команду не выполняя её. Может использоваться для кеширования команд что бы избежать их повторного парсинга.
