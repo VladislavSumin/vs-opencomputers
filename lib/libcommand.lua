@@ -140,10 +140,8 @@ function CommandProcessor:parseCommandArguments(command, index)
             local argument
             index, argument = self:parseCommandArgument(command, index)
             table.insert(arguments, argument)
-        elseif char:match("\n") then
-            break
         else
-            error("Unexpected char " .. char)
+            break
         end
     end
     return index, arguments
@@ -200,6 +198,16 @@ function CommandProcessor:parseInternal(command, index, singleMode)
             if singleMode then
                 return index, parsedCommand
             end
+        elseif char == "(" then
+            local parsedCommand
+            index, parsedCommand = self:parseInternal(command, index + 1)
+            table.insert(commands, parsedCommand)
+            if singleMode then
+                return index, parsedCommand
+            end
+        elseif char == ")" then
+            index = index + 1
+            break
         elseif char:match("%s") then
             index = index + 1
         else

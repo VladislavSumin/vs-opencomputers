@@ -67,3 +67,9 @@ function testRepitableWithSpaceSingleCommandNoArgs()
     processor:parse("3 tna"):exec()
     test.assertEquals("tnatnatna", result[1])
 end
+
+function testBrackets()
+    local processor, result = makeTestProcessor()
+    processor:parse("2(tna\ntwa h o)"):exec()
+    test.assertEquals("tnatwahotnatwaho", result[1])
+end
