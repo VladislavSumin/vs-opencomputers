@@ -56,13 +56,31 @@ end
 -------------------------------------------------------------------------------
 
 --- Основной класс для обработки команд.
---- @class CommandProcessor
+--- @class CommandProcessor:Object
 --- @field private functions [function]
 local CommandProcessor = libclass.Object:extend()
 
 --- @param functions [function] массив всех функций которые могут быть вызваны.
 function CommandProcessor:initialize(functions)
     self.functions = functions
+end
+
+--- парсит имя поманды до первой не буквы
+--- @private
+--- @param command string
+--- @param index integer
+--- @return integer, string
+function CommandProcessor:parseCommandName(command, index)
+    local commandName = ""
+    while index <= #command do
+        local char = command:sub(index, index)
+        if not char:match("%a") then
+            break
+        end
+        commandName = commandName .. char
+        index = index + 1
+    end
+    return index, commandName
 end
 
 --- @private
@@ -72,7 +90,19 @@ end
 --- @return            integer,                    ParsedCommand
 function CommandProcessor:parseInternal(command, index)
     index = index or 1
-    return index, ParsedCommand:new()
+    local commands = {}
+    while index <= #command do
+        local char = command:sub(index, index)
+        if char:match("%a") then
+            local commandName
+            index, commandName = self:parseCommandName(command, index)
+            local func = self.functions[commandName]
+            table.insert(commands, SimpleParsedCommand:new(1, func, {}))
+        else
+            error("Unexpected symbol " .. char)
+        end
+    end
+    return index, CompositeParsedCommand:new(1, commands)
 end
 
 --- Парсит команду не выполняя её. Может использоваться для кеширования команд что бы избежать их повторного парсинга.
