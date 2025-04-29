@@ -29,6 +29,23 @@ function SimpleParsedCommand:exec()
     self.fun(table.unpack(self.args))
 end
 
+--- Повторяемая несколько раз команда
+--- @class RepitableParsedCommand:ParsedCommand
+--- @field private count integer количество повторений.
+--- @field private command ParsedCommand команда для повторения.
+local RepitableParsedCommand = ParsedCommand:extend()
+
+function RepitableParsedCommand:initialize(count, command)
+    self.count = count
+    self.command = command
+end
+
+function RepitableParsedCommand:exec()
+    for _ = 1, self.count do
+        self.command:exec()
+    end
+end
+
 --- Сложная составная команда, состоит из набора простых команд.
 --- @class CompositeParsedCommand:ParsedCommand
 --- @field private commands [ParsedCommand] список дочерних команд.
@@ -73,6 +90,23 @@ function CommandProcessor:parseCommandName(command, index)
         index = index + 1
     end
     return index, commandName
+end
+
+--- @private
+--- @param command string
+--- @param index integer
+--- @return integer, integer
+function CommandProcessor:parseRepitCount(command, index)
+    local repitCount = ""
+    while index <= #command do
+        local char = command:sub(index, index)
+        if not char:match("%d") then
+            break
+        end
+        repitCount = repitCount .. char
+        index = index + 1
+    end
+    return index, tonumber(repitCount)
 end
 
 --- @private
@@ -128,26 +162,44 @@ function CommandProcessor:parseCommand(command, index)
     return index, SimpleParsedCommand:new(func, args)
 end
 
+--- @private
+--- @param command string
+--- @param index integer
+--- @return integer, RepitableParsedCommand
 function CommandProcessor:parseRepitableCommand(command, index)
-
+    local count
+    index, count = self:parseRepitCount(command, index)
+    local parsedCommand
+    index, parsedCommand = self:parseInternal(command, index, true)
+    return index, RepitableParsedCommand:new(count, parsedCommand)
 end
 
 --- @private
 --- @param command string вся команда от начала.
 --- @param index integer? индекс начиная с которого нужно парсить команду.
+--- @param singleMode boolean? если передан как true то будет распаршена одна первая команда а не все.
 ---      индекс на котором остановился парсинг, результат парсинга
 --- @return            integer,                    ParsedCommand
-function CommandProcessor:parseInternal(command, index)
+function CommandProcessor:parseInternal(command, index, singleMode)
     index = index or 1
+    singleMode = singleMode or false
     local commands = {}
     while index <= #command do
         local char = command:sub(index, index)
         if char:match("%a") then
             local parsedCommand
             index, parsedCommand = self:parseCommand(command, index)
+            if singleMode then
+                return index, parsedCommand
+            end
             table.insert(commands, parsedCommand)
         elseif char:match("%d") then
-            error("Letter not supported")
+            local parsedCommand
+            index, parsedCommand = self:parseRepitableCommand(command, index)
+            table.insert(commands, parsedCommand)
+            if singleMode then
+                return index, parsedCommand
+            end
         elseif char:match("%s") then
             index = index + 1
         else

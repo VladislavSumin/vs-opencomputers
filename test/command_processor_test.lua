@@ -55,3 +55,15 @@ function testMultipleCommandsMultiline()
     ]]):exec()
     test.assertEquals("twatt3tna", result[1])
 end
+
+function testRepitableSingleCommandNoArgs()
+    local processor, result = makeTestProcessor()
+    processor:parse("3tna"):exec()
+    test.assertEquals("tnatnatna", result[1])
+end
+
+function testRepitableWithSpaceSingleCommandNoArgs()
+    local processor, result = makeTestProcessor()
+    processor:parse("3 tna"):exec()
+    test.assertEquals("tnatnatna", result[1])
+end
