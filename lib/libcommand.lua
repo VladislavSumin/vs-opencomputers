@@ -106,6 +106,8 @@ function CommandProcessor:parseCommandArguments(command, index)
             local argument
             index, argument = self:parseCommandArgument(command, index)
             table.insert(arguments, argument)
+        elseif char:match("\n") then
+            break
         else
             error("Unexpected char " .. char)
         end
@@ -130,6 +132,8 @@ function CommandProcessor:parseInternal(command, index)
             index, args = self:parseCommandArguments(command, index)
             local func = self.functions[commandName]
             table.insert(commands, SimpleParsedCommand:new(func, args))
+        elseif char:match("%s") then
+            index = index + 1
         else
             error("Unexpected symbol " .. char)
         end
