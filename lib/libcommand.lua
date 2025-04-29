@@ -116,6 +116,23 @@ function CommandProcessor:parseCommandArguments(command, index)
 end
 
 --- @private
+--- @param command string
+--- @param index integer
+--- @return integer, SimpleParsedCommand
+function CommandProcessor:parseCommand(command, index)
+    local commandName
+    index, commandName = self:parseCommandName(command, index)
+    local args
+    index, args = self:parseCommandArguments(command, index)
+    local func = self.functions[commandName]
+    return index, SimpleParsedCommand:new(func, args)
+end
+
+function CommandProcessor:parseRepitableCommand(command, index)
+
+end
+
+--- @private
 --- @param command string вся команда от начала.
 --- @param index integer? индекс начиная с которого нужно парсить команду.
 ---      индекс на котором остановился парсинг, результат парсинга
@@ -126,12 +143,11 @@ function CommandProcessor:parseInternal(command, index)
     while index <= #command do
         local char = command:sub(index, index)
         if char:match("%a") then
-            local commandName
-            index, commandName = self:parseCommandName(command, index)
-            local args
-            index, args = self:parseCommandArguments(command, index)
-            local func = self.functions[commandName]
-            table.insert(commands, SimpleParsedCommand:new(func, args))
+            local parsedCommand
+            index, parsedCommand = self:parseCommand(command, index)
+            table.insert(commands, parsedCommand)
+        elseif char:match("%d") then
+            error("Letter not supported")
         elseif char:match("%s") then
             index = index + 1
         else
