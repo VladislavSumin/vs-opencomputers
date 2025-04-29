@@ -73,3 +73,16 @@ function testBrackets()
     processor:parse("2(tna\ntwa h o)"):exec()
     test.assertEquals("tnatwahotnatwaho", result[1])
 end
+
+function testComplexCommand()
+    local processor, result = makeTestProcessor()
+    processor:parse([[
+        2(
+            twa o d
+            2tna
+        )
+        2 twa e z
+        tna
+    ]]):exec()
+    test.assertEquals("twaodtnatnatwaodtnatnatwaeztwaeztna", result[1])
+end
