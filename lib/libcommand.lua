@@ -208,7 +208,7 @@ function CommandProcessor:parseInternal(command, index, singleMode)
         elseif char == ")" then
             index = index + 1
             break
-        elseif char:match("%s") then
+        elseif char:match("%s") or char:match(",") then
             index = index + 1
         else
             error("Unexpected symbol " .. char)

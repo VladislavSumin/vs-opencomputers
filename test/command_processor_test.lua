@@ -86,3 +86,12 @@ function testComplexCommand()
     ]]):exec()
     test.assertEquals("twaodtnatnatwaodtnatnatwaeztwaeztna", result[1])
 end
+
+function testComma()
+    local processor, result = makeTestProcessor()
+    processor:parse([[
+        2(twa o d, 2tna)
+        2 twa e z, tna
+    ]]):exec()
+    test.assertEquals("twaodtnatnatwaodtnatnatwaeztwaeztna", result[1])
+end
